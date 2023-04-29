@@ -1,0 +1,100 @@
+// cover some element-ui styles
+
+.el-breadcrumb__inner,
+.el-breadcrumb__inner a {
+  color: #FFFFFF;
+  font-weight: 400 !important;
+}
+
+.el-upload {
+  input[type="file"] {
+    display: none !important;
+  }
+}
+
+.el-upload__input {
+  display: none;
+}
+
+
+// to fixed https://github.com/ElemeFE/element/issues/2461
+.el-dialog {
+  transform: none;
+  left: 0;
+  position: relative;
+  margin: 0 auto;
+}
+
+// refine element ui upload
+.upload-container {
+  .el-upload {
+    width: 100%;
+
+    .el-upload-dragger {
+      width: 100%;
+      height: 200px;
+    }
+  }
+}
+
+// dropdown
+.el-dropdown-menu {
+  a {
+    display: block
+  }
+}
+
+// to fix el-date-picker css style
+.el-range-separator {
+  box-sizing: content-box;
+}
+
+// el-table 表格
+.el-table:not(.el-dialog .el-table){
+  padding: 20px;
+  color: #fff;
+  background-color: rgba(94, 62, 208, 0.6);
+  border-radius: 15px;
+  th, tr{
+    background-color: transparent;
+  }
+  td, th.is-leaf{
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  &::before{
+    display: none;
+  }
+  thead{
+    color: #fff;
+  }
+}
+.el-table--enable-row-hover .el-table__body tr:hover>td{
+  background-color: rgba(94, 62, 255, 0.8);
+}
+
+// el-menu 菜单
+.el-menu{
+  //background-color: transparent;
+  .el-menu-item.is-active {
+    background: linear-gradient(90deg, #C82CFF -4.52%, #6E4AFF 96.66%);
+    //display: inline-block;
+    //margin: 0 20px;
+  }
+}
+
+// el-dialog 弹窗
+.el-dialog{
+  border-radius: 20px;
+  color: #2b2f3a;
+  .el-scrollbar__thumb{
+    background-color: #6c7cbf;
+  }
+  .el-table--enable-row-hover .el-table__body tr:hover>td{
+    background-color: #F5F7FA;
+  }
+  .el-dialog__body{
+    padding: 10px 20px 30px;
+  }
+}
+
+

@@ -1,0 +1,130 @@
+<template>
+  <div style="padding: 0 15px; color: #fff" @click="toggleClick">
+    <!--    <svg
+      :class="{'is-active':isActive}"
+      class="hamburger"
+      viewBox="0 0 1024 1024"
+      xmlns="http://www.w3.org/2000/svg"
+      width="200"
+      height="200"
+    >
+      <path fill="#FFF" d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM142.4 642.1L298.7 519a8.84 8.84 0 0 0 0-13.9L142.4 381.9c-5.8-4.6-14.4-.5-14.4 6.9v246.3a8.9 8.9 0 0 0 14.4 7z" />
+    </svg>-->
+
+    <div class="hamburger" :class="{'is-active':!isActive}">
+      <span class="line" />
+      <span class="line" />
+      <span class="line" />
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          opacity="0.4"
+          d="M16.7548 0.333313H20.7051C22.341 0.333313 23.6667 1.67014 23.6667 3.31994V7.30359C23.6667 8.95339 22.341 10.2902 20.7051 10.2902H16.7548C15.1188 10.2902 13.7932 8.95339 13.7932 7.30359V3.31994C13.7932 1.67014 15.1188 0.333313 16.7548 0.333313Z"
+          fill="white"
+        />
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M3.29492 0.333313H7.24522C8.8812 0.333313 10.2068 1.67014 10.2068 3.31994V7.30359C10.2068 8.95339 8.8812 10.2902 7.24522 10.2902H3.29492C1.65894 10.2902 0.333313 8.95339 0.333313 7.30359V3.31994C0.333313 1.67014 1.65894 0.333313 3.29492 0.333313ZM3.29492 13.7097H7.24522C8.8812 13.7097 10.2068 15.0466 10.2068 16.6964V20.68C10.2068 22.3287 8.8812 23.6666 7.24522 23.6666H3.29492C1.65894 23.6666 0.333313 22.3287 0.333313 20.68V16.6964C0.333313 15.0466 1.65894 13.7097 3.29492 13.7097ZM20.705 13.7097H16.7547C15.1188 13.7097 13.7931 15.0466 13.7931 16.6964V20.68C13.7931 22.3287 15.1188 23.6666 16.7547 23.6666H20.705C22.341 23.6666 23.6666 22.3287 23.6666 20.68V16.6964C23.6666 15.0466 22.341 13.7097 20.705 13.7097Z"
+          fill="white"
+        />
+      </svg>
+
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Hamburger',
+  props: {
+    isActive: {
+      type: Boolean,
+      default: false
+    }
+  },
+  methods: {
+    toggleClick() {
+      this.$emit('toggleClick')
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+.hamburger {
+  display: inline-block;
+  left: 0rem;
+  position: relative;
+  top: unset;
+  -webkit-transition: all 0.3s ease-in-out 0s;
+  transition: all 0.3s ease-in-out 0s;
+  width: 3.125rem;
+  padding: 0.625rem;
+  z-index: 999;
+  border-radius: 0.938rem;
+  background: rgba(94, 62, 208, 0.6);
+  margin: 15px 20px 15px;
+}
+@media only screen and (max-width: 74.9375rem) {
+  .hamburger {
+    top: 0.2rem; } }
+.hamburger svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 1; }
+
+.hamburger .line {
+  background: #fff;
+  display: block;
+  height: 0.1875rem;
+  border-radius: 0.1875rem;
+  margin-top: 0.375rem;
+  margin-bottom: 0.375rem;
+  margin-right: auto;
+  opacity: 0;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out; }
+
+.hamburger.is-active .line {
+  opacity: 1; }
+
+.hamburger.is-active svg {
+  opacity: 0; }
+
+.hamburger .line:nth-child(1) {
+  width: 1.625rem; }
+
+.hamburger .line:nth-child(2) {
+  width: 1.625rem; }
+
+.hamburger .line:nth-child(3) {
+  width: 0.9375rem; }
+
+.hamburger:hover {
+  cursor: pointer; }
+
+.hamburger:hover .line {
+  width: 1.625rem; }
+
+.hamburger.is-active .line:nth-child(1),
+.hamburger.is-active .line:nth-child(3) {
+  width: 0.625rem;
+  height: 0.125rem; }
+
+.hamburger.is-active .line:nth-child(2) {
+  -webkit-transform: translateX(3px);
+  transform: translateX(3px);
+  width: 1.375rem;
+  height: 0.125rem; }
+
+.hamburger.is-active .line:nth-child(1) {
+  -webkit-transform: translateY(4px) translateX(15px) rotate(45deg);
+  transform: translateY(4px) translateX(15px) rotate(45deg); }
+
+.hamburger.is-active .line:nth-child(3) {
+  -webkit-transform: translateY(-4px) translateX(15px) rotate(-45deg);
+  transform: translateY(-4px) translateX(15px) rotate(-45deg); }
+</style>
