@@ -1,7 +1,7 @@
 <template>
   <div class="search-input">
     <span>{{ title }}</span>
-    <el-input v-model="_value" placeholder="请输入内容" @keydown.enter.native="handleSearch" @blur="handleSearch" />
+    <el-input v-model="_value" placeholder="请输入内容" clearable @keydown.enter.native="handleSearch" @blur="handleSearch" />
   </div>
 </template>
 

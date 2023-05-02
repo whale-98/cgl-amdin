@@ -20,6 +20,10 @@ router.beforeEach(async(to, from, next) => {
   // determine whether the user has logged in
   const hasToken = getToken()
 
+  if (to.query.key) {
+    localStorage.setItem('key', to.query.key)
+  }
+
   if (1||hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page

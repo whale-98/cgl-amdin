@@ -1,12 +1,14 @@
 <template>
-  <div class="team">
+  <div class="performance">
     <!--搜索组件-->
     <div class="search-box">
       <!--input输入搜索框-->
-      <SearchInput title="团队名" :value.sync="searchData.团队名" @handleSearch="handleSearch"/>
-      <!--select下拉搜索框-->
+      <SearchInput title="顾问名" :value.sync="searchData.顾问名" @handleSearch="handleSearch"/>
+      <!--input输入搜索框-->
       <SearchSelect title="完成比" :value.sync="searchData.完成比" :options="percentOptions" @handleSearch="handleSearch"/>
-      <!--时间选择器搜索框，时间选择器需要调接口，事件不同为getData-->
+      <!--select下拉搜索框，需要调接口，事件不同为getData-->
+      <SearchSelect title="职位" :value.sync="searchData.职位" :options="positionOptions" @handleSearch="getData"/>
+      <!--时间选择器搜索框，需要调接口，事件不同为getData-->
       <SearchDate title="统计时间" :value.sync="searchData.统计时间" @handleSearch="getData"/>
     </div>
 
@@ -26,42 +28,35 @@
           :data="tableShowData"
           :col="col1"
           :default-sort="{prop: 'billing排名', order: 'ascending'}"
-          :loadingShow="loading"
           :max-height="maxHeight"
-          @row-click="handleClick"
+          :loadingShow="loading"
         >
           <!--以下template标签内为自定义表格内容，通过表头数据prop字段来匹配-->
-          <template v-slot:全年指标="{ scope }">
-            <span>￥{{ scope.row.全年指标 }}</span>
-          </template>
-          <template v-slot:当前指标="{ scope }">
-            <span>￥{{ scope.row.当前指标 }}</span>
+          <template v-slot:指标="{ scope }">
+            <span>￥{{ scope.row.指标 }}</span>
           </template>
           <template v-slot:billing="{ scope }">
             <span>￥{{ scope.row.billing }}</span>
           </template>
           <template v-slot:billing完成率="{ scope }">
-            <span class="completion" :class="scope.row.billing完成率>100?'greenBox':scope.row.billing完成率>50?'blueBox':'redBox'">
+            <span class="completion"
+                  :class="scope.row.billing完成率>100?'greenBox':scope.row.billing完成率>50?'blueBox':'redBox'">
               {{ scope.row.billing完成率 }}%
             </span>
           </template>
         </CommonTable>
       </el-tab-pane>
       <!--与上方重复-->
-      <el-tab-pane label="开票" name="开票">
+      <el-tab-pane label="开票" name="">
         <CommonTable
           :data="tableShowData"
           :col="col2"
           :default-sort="{prop: '开票完成率排名', order: 'ascending'}"
-          :loadingShow="loading"
           :max-height="maxHeight"
-          @row-click="handleClick"
+          :loadingShow="loading"
         >
-          <template v-slot:全年指标="{ scope }">
-            <span>￥{{ scope.row.全年指标 }}</span>
-          </template>
-          <template v-slot:当前指标="{ scope }">
-            <span>￥{{ scope.row.当前指标 }}</span>
+          <template v-slot:指标="{ scope }">
+            <span>￥{{ scope.row.指标 }}</span>
           </template>
           <template v-slot:开票="{ scope }">
             <span>￥{{ scope.row.开票 }}</span>
@@ -79,15 +74,11 @@
           :data="tableShowData"
           :col="col3"
           :default-sort="{prop: '到款完成率排名', order: 'ascending'}"
-          :loadingShow="loading"
           :max-height="maxHeight"
-          @row-click="handleClick"
+          :loadingShow="loading"
         >
-          <template v-slot:全年指标="{ scope }">
-            <span>￥{{ scope.row.全年指标 }}</span>
-          </template>
-          <template v-slot:当前指标="{ scope }">
-            <span>￥{{ scope.row.当前指标 }}</span>
+          <template v-slot:指标="{ scope }">
+            <span>￥{{ scope.row.指标 }}</span>
           </template>
           <template v-slot:到款="{ scope }">
             <span>￥{{ scope.row.到款 }}</span>
@@ -100,17 +91,6 @@
         </CommonTable>
       </el-tab-pane>
     </el-tabs>
-
-    <!--弹窗内容，需弹窗时增加 参数都必填-->
-    <el-dialog destroy-on-close title="详情" :visible.sync="dialogTableVisible" width="70%" top="10vh">
-      <!--标题自定义，加了下载按钮，需要下载按钮时添加-->
-      <template slot="title">
-        <span>详情</span>
-        <el-button size="small" type="primary" style="margin-left: 20px;" @click="fileDownload">下载</el-button>
-      </template>
-      <!--弹窗表格主体，使用通用表格-->
-      <CommonTable ref="tableData" :data="detailData" :col="detailCol" :max-height="maxHeight"/>
-    </el-dialog>
   </div>
 </template>
 
@@ -119,11 +99,10 @@ import CommonTable from '@/components/commonTable'
 import SearchInput from '@/components/SearchInput'
 import SearchSelect from '@/components/SearchSelect'
 import SearchDate from '@/components/SearchDate'
-import {getTeamList, achievementdetail} from '@/api/team'
-import {exportToExcel} from '@/utils/tableToExcel'
+import { getConsultantList } from '@/api/consultant'
 
 export default {
-  components: {CommonTable, SearchInput, SearchSelect, SearchDate},
+  components: { CommonTable, SearchInput, SearchSelect, SearchDate },
   data() {
     return {
       /* 主体数据，基本页面都需要 */
@@ -131,58 +110,56 @@ export default {
       tableShowData: [], // 表格实际显示数据
       loading: false, // 表格loading判断
       col1: [
-        {label: '一级团队', prop: '一级团队', width: '300'},
-        {label: '全年指标', prop: '全年指标', sortable: true},
-        {label: '当前指标', prop: '当前指标', sortable: true},
-        {label: 'Billing', prop: 'billing', sortable: true},
-        {label: '完成率', prop: 'billing完成率', sortable: true, width: '100'},
-        {label: '完成率排名', prop: 'billing完成率排名', sortable: true},
-        {label: '业绩排名', prop: 'billing排名', sortable: true}
-      ], // 表头数据1
+        { label: '顾问名', prop: '顾问名', width: '200' },
+        { label: '职位', prop: '职位', sortable: true },
+        { label: '当前指标', prop: '指标', sortable: true },
+        { label: 'Billing', prop: 'billing', sortable: true },
+        { label: '完成率', prop: 'billing完成率', sortable: true, width: '100' },
+        { label: '完成率排名', prop: 'billing完成率排名', sortable: true },
+        { label: '业绩排名', prop: 'billing排名', sortable: true }
+      ], // 表头数据
       col2: [
-        {label: '一级团队', prop: '一级团队', width: '300'},
-        {label: '全年指标', prop: '全年指标', sortable: true},
-        {label: '当前指标', prop: '当前指标', sortable: true},
-        {label: '开票', prop: '开票', sortable: true},
-        {label: '完成率', prop: '开票完成率', sortable: true, width: '100'},
-        {label: '完成率排名', prop: '开票排名', sortable: true},
-        {label: '业绩排名', prop: '开票完成率排名', sortable: true}
-      ], // 表头数据2
+        { label: '顾问名', prop: '顾问名', width: '200' },
+        { label: '职位', prop: '职位', sortable: true },
+        { label: '当前指标', prop: '指标', sortable: true },
+        { label: '开票', prop: '开票', sortable: true },
+        { label: '完成率', prop: '开票完成率', sortable: true, width: '100' },
+        { label: '完成率排名', prop: '开票排名', sortable: true },
+        { label: '业绩排名', prop: '开票完成率排名', sortable: true }
+      ], // 表头数据
       col3: [
-        {label: '一级团队', prop: '一级团队', width: '300'},
-        {label: '全年指标', prop: '全年指标', sortable: true},
-        {label: '当前指标', prop: '当前指标', sortable: true},
-        {label: '到款', prop: '到款', sortable: true},
-        {label: '完成率', prop: '到款完成率', sortable: true, width: '100'},
-        {label: '完成率排名', prop: '到款排名', sortable: true},
-        {label: '业绩排名', prop: '到款完成率排名', sortable: true}
-      ], // 表头数据3
+        { label: '顾问名', prop: '顾问名', width: '200' },
+        { label: '职位', prop: '职位', sortable: true },
+        { label: '当前指标', prop: '指标', sortable: true },
+        { label: '到款', prop: '到款', sortable: true },
+        { label: '完成率', prop: '到款完成率', sortable: true, width: '100' },
+        { label: '完成率排名', prop: '到款排名', sortable: true },
+        { label: '业绩排名', prop: '到款完成率排名', sortable: true }
+      ], // 表头数据
 
       /* 搜索组件数据，根据页面进行修改 */
-      searchData: {团队名: '', 完成比: '所有', 统计时间: []}, // 搜索数据
+      searchData: { 团队名: '', 完成比: '所有', 职位: 'Associate Consultant', 统计时间: [] }, // 搜索数据
       percentOptions: [
-        {label: '所有', value: '所有'},
-        {label: '0-50%', value: '0-50%'},
-        {label: '50-100%', value: '50-100%'},
-        {label: '100%', value: '100%'}
+        { label: '所有', value: '所有' },
+        { label: '0-50%', value: '0-50%' },
+        { label: '50-100%', value: '50-100%' },
+        { label: '100%', value: '100%' }
       ], // 百分比搜索下拉列表
+      positionOptions: [
+        { label: 'AC', value: 'Associate Consultant' },
+        { label: 'C', value: 'Consultant' },
+        { label: 'SC', value: 'Senior Consultant' },
+        { label: 'AD', value: 'Associate Director' },
+        { label: 'D', value: 'Director' },
+        { label: 'AP', value: 'Associate Partner' },
+        { label: 'P', value: 'Partner' },
+        { label: 'SP', value: 'Senior Partner' },
+        { label: 'MP', value: 'Managing Partner' },
+        { label: 'ALL', value: "Associate Consultant,Consultant,Senior Consultant,Associate Director,Director,Associate Partner,Partner,Senior Partner,Managing Partner"},
+      ], // 职位搜索下拉列表
 
       /* tabs组件所需数据，无tabs可删除 */
-      tabActiveName: 'billing',
-
-      /* 弹窗组件所需数据，无弹窗可删除 */
-      dialogTableVisible: false, // 控制弹窗显示
-      detailData: [], // 弹窗数据
-      detailCol: [
-        {label: '发票id', prop: '发票id'},
-        {label: '顾问id', prop: '顾问id'},
-        {label: '顾问名', prop: '顾问名'},
-        {label: '目前团队', prop: '目前团队'},
-        {label: '分配金额', prop: '分配金额'},
-        {label: '添加日期', prop: '添加日期', width: '180'},
-        {label: '核算开票时间', prop: '核算开票时间', width: '180'},
-        {label: '核算到款时间', prop: '核算到款时间', width: '180'}
-      ] // 弹窗表头数据
+      tabActiveName: 'billing'
     }
   },
   mounted() {
@@ -204,7 +181,12 @@ export default {
       /* 将搜索框内容保存到vuex中，给页面下载使用 */
       this.$store.dispatch('common/setSearchData', this.searchData)
       /* 请求页面接口数据 */
-      getTeamList({start: this.searchData.统计时间[0], end: this.searchData.统计时间[1], key: localStorage.getItem('key')}).then(res => {
+      getConsultantList({
+        start: this.searchData.统计时间[0],
+        end: this.searchData.统计时间[1],
+        key: localStorage.getItem('key'),
+        title: this.searchData.职位.split(',')
+      }).then(res => {
         /* 去除第一列数据 */
         const title = res.data.splice(0, 1)[0]
         /* 处理数据为键值对格式 */
@@ -226,9 +208,9 @@ export default {
       // 需要深拷贝，不然会影响源数据
       let searchDataList = JSON.parse(JSON.stringify(this.tableData))
       /* 这里需要根据搜索内容进行自定义处理 */
-      if (this.searchData.团队名) {
+      if (this.searchData.顾问名) {
         searchDataList = searchDataList.filter(item => {
-          return item.一级团队.indexOf(this.searchData.团队名) !== -1
+          return item.顾问.indexOf(this.searchData.顾问名) !== -1
         })
       }
       if (this.searchData.完成比) {
@@ -245,41 +227,13 @@ export default {
         })
       }
       this.tableShowData = searchDataList
-    },
-    // 弹窗表格数据(无弹窗可删除)
-    handleClick(row) {
-      /* 初始化表格数据 */
-      this.detailData = []
-      /* 获取表格数据 */
-      achievementdetail({
-        start: '2023-04-01',
-        end: '2023-04-30',
-        key: 'ahushuai',
-        id: row.主团队id,
-        type: 1
-      }).then(res => {
-        /* 显示弹窗 */
-        this.dialogTableVisible = true
-        // 手动处理接口数据改为键值对格式
-        res.data.forEach(item => {
-          const tempObj = {}
-          item.forEach((i, index) => {
-            tempObj[this.detailCol[index].prop] = i !== 'None' ? i : ''
-          })
-          this.detailData.push(tempObj)
-        })
-      })
-    },
-    // 弹窗文件下载(无弹窗可删除)
-    fileDownload() {
-      exportToExcel(this.detailData, 'myTable', this.detailCol)
-    },
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  .team {
+  .performance {
     padding: 20px;
 
     ::v-deep .el-tabs__header {

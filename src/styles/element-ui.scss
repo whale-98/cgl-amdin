@@ -50,26 +50,33 @@
 }
 
 // el-table 表格
-.el-table:not(.el-dialog .el-table){
-  padding: 20px;
-  color: #fff;
-  background-color: rgba(94, 62, 208, 0.6);
+.commonTable:not(.el-dialog .commonTable){
   border-radius: 15px;
-  th, tr{
-    background-color: transparent;
-  }
-  td, th.is-leaf{
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  &::before{
-    display: none;
-  }
-  thead{
+  background-color: rgba(94, 62, 208, 0.6);
+  padding: 20px;
+  .el-table{
+    //padding: 20px;
     color: #fff;
+    background-color: transparent;
+    th, tr{
+      background-color: transparent;
+    }
+    td, th.is-leaf{
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    &::before{
+      display: none;
+    }
+    thead{
+      color: #fff;
+    }
+    .el-loading-mask{
+      background-color: rgba(95,41,225,0.4);
+    }
   }
-}
-.el-table--enable-row-hover .el-table__body tr:hover>td{
-  background-color: rgba(94, 62, 255, 0.8);
+  .el-table--enable-row-hover .el-table__body tr:hover>td{
+    background-color: rgba(94, 62, 255, 0.8);
+  }
 }
 
 // el-menu 菜单
@@ -97,4 +104,32 @@
   }
 }
 
+// 下拉菜单
+.el-dropdown-menu__item{
+  display: flex;
+  align-items: center;
+}
 
+// 菜单图标
+.el-menu{
+  .svg-icon{
+    margin-left: 13px;
+  }
+  .sub-el-icon{
+    margin-left: 10px !important;
+  }
+
+  .el-submenu__icon-arrow{
+    right: 40px;
+    margin-top: -10px;
+    font-size: 20px;
+  }
+}
+.hideSidebar .el-menu .sub-el-icon{
+  margin-left: 30px !important;
+}
+
+
+.el-menu--vertical{
+  background-color: rgba(115, 52, 214, 0.8);
+}

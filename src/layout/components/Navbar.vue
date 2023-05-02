@@ -6,26 +6,33 @@
     <!--    <breadcrumb class="breadcrumb-container" />-->
 
     <div class="right-menu">
+      <div class="headerIcon">
+        <svg-icon icon-class="news" />
+      </div>
+      <div class="headerIcon">
+        <svg-icon icon-class="email" />
+      </div>
+      <div class="headerIcon">
+        <svg-icon icon-class="calendar" />
+      </div>
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
+          <img src="@/assets/logo.png" class="user-avatar">
+          <div class="userInfo">
+            <div class="userName">Admin</div>
+            <div class="userRole">管理员</div>
+          </div>
+          <i class="el-icon-arrow-down" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
-            <el-dropdown-item>
-              Home
-            </el-dropdown-item>
-          </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
-          <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
+          <el-dropdown-item  @click.native="download">
+            <i class="el-icon-download" />
+            <span style="display:block;">下载</span>
           </el-dropdown-item>
+          <!--<el-dropdown-item divided @click.native="logout">
+            <i class="el-icon-arrow-down" />
+            <span style="display:block;">退出登录</span>
+          </el-dropdown-item>-->
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -36,6 +43,7 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import {achievementDownload, performanceDownload, titleChangeDownload } from '@/api/common'
 
 export default {
   components: {
@@ -55,6 +63,29 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    async download() {
+      const searchData = this.$store.state.common.searchData
+      let res
+      if (this.$route.path === '/team/teamPerformance'){
+        res = await achievementDownload({ start: searchData.统计时间[0], end: searchData.统计时间[1], key: 'ahushuai' })
+      } else if (this.$route.path === '/consultant/consultantPerformance'){
+        res = await performanceDownload({ start: searchData.统计时间[0], end: searchData.统计时间[1], key: 'ahushuai', title: searchData.职位.split(',') })
+      } else if (this.$route.path === '/consultant/jobChange'){
+        res = await titleChangeDownload({ start: searchData.统计时间[0], end: searchData.统计时间[1], key: 'ahushuai' })
+      }
+      if (res.code === 403) {
+        window.location.href = 'https://cmp.mindoro.cn/'
+      } else if (res.data){
+        window.open('http://101.132.226.125/download/' + res.data)
+      }
+      // achievementdownload({ start: date[0], end: date[1], key: 'ahushuai' }).then(res => {
+      //   if (res.code === 403) {
+      //     window.location.href = 'https://cmp.mindoro.cn/'
+      //   } else {
+      //     window.open('http://101.132.226.125/download/' + res.data)
+      //   }
+      // })
     }
   }
 }
@@ -66,7 +97,6 @@ export default {
   overflow: hidden;
   position: relative;
   //box-shadow: 0 1px 4px rgba(0,21,41,.08);
-
   .hamburger-container {
     line-height: 46px;
     height: 100%;
@@ -85,15 +115,35 @@ export default {
   }
 
   .right-menu {
+    display: flex;
+    align-items: center;
     float: right;
     height: 100%;
-    line-height: 50px;
+    /*line-height: 50px;*/
+    padding: 10px 0;
 
     &:focus {
       outline: none;
     }
 
-    .right-menu-item {
+    .headerIcon{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 20px;
+      height: 50px;
+      width: 50px;
+      background-color: rgba(94, 62, 208, 0.6);
+      border-radius: 15px;
+      cursor: pointer;
+      .svg-icon{
+        color: #fff;
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    /*.right-menu-item {
       display: inline-block;
       padding: 0 8px;
       height: 100%;
@@ -109,13 +159,21 @@ export default {
           background: rgba(0, 0, 0, .025)
         }
       }
-    }
+    }*/
 
     .avatar-container {
+      display: flex;
       margin-right: 30px;
+      padding: 0.5rem 0.6rem;
+      box-shadow: 0px 4px 6px rgb(62 73 84 / 4%);
+      border-radius: 0.938rem;
+      background: rgba(94, 62, 208, 0.6);
+      cursor: pointer;
 
       .avatar-wrapper {
-        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        /*margin-top: 5px;*/
         position: relative;
 
         .user-avatar {
@@ -125,12 +183,26 @@ export default {
           border-radius: 10px;
         }
 
-        .el-icon-caret-bottom {
+        .userInfo {
+          line-height: 22px;
+          margin: 0 10px;
+          .userName {
+            font-size: 16px;
+            color: #FFF;
+          }
+          .userRole {
+            color: #FFFFFF99;
+          }
+        }
+
+        .el-icon-arrow-down {
+          color: #FFF;
           cursor: pointer;
-          position: absolute;
+          vertical-align: middle;
+          /*position: absolute;
           right: -20px;
-          top: 25px;
-          font-size: 12px;
+          top: 25px;*/
+          font-size: 20px;
         }
       }
     }
