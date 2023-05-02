@@ -74,18 +74,9 @@ export default {
       } else if (this.$route.path === '/consultant/jobChange'){
         res = await titleChangeDownload({ start: searchData.统计时间[0], end: searchData.统计时间[1], key: 'ahushuai' })
       }
-      if (res.code === 403) {
-        window.location.href = 'https://cmp.mindoro.cn/'
-      } else if (res.data){
+      if (res.data) {
         window.open('http://101.132.226.125/download/' + res.data)
       }
-      // achievementdownload({ start: date[0], end: date[1], key: 'ahushuai' }).then(res => {
-      //   if (res.code === 403) {
-      //     window.location.href = 'https://cmp.mindoro.cn/'
-      //   } else {
-      //     window.open('http://101.132.226.125/download/' + res.data)
-      //   }
-      // })
     }
   }
 }

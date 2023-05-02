@@ -209,8 +209,9 @@ export default {
       let searchDataList = JSON.parse(JSON.stringify(this.tableData))
       /* 这里需要根据搜索内容进行自定义处理 */
       if (this.searchData.顾问名) {
+        const reg = new RegExp(this.searchData.顾问名, 'i')
         searchDataList = searchDataList.filter(item => {
-          return item.顾问.indexOf(this.searchData.顾问名) !== -1
+          return item.顾问名.match(reg) !== null
         })
       }
       if (this.searchData.完成比) {
