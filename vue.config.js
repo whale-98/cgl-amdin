@@ -39,7 +39,7 @@ module.exports = {
     before: require('./mock/mock-server.js'),
     proxy: { // 配置跨域
       '/api': {
-        target: `http://101.132.226.125`, //请求后台接口
+        target: `http://101.132.226.125`, // 请求后台接口
         changeOrigin: true, // 允许跨域
         pathRewrite: {
           '^/api': '' // 重写请求
@@ -55,6 +55,9 @@ module.exports = {
       alias: {
         '@': resolve('src')
       }
+    },
+    externals: {
+      './cptable': 'var cptable'
     }
   },
   chainWebpack(config) {
